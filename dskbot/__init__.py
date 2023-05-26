@@ -28,18 +28,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if subscribed:
         reply_markup = InlineKeyboardMarkup([
             [
-                InlineKeyboardButton(text='🔥 Сделать заказ', callback_data='order'),
-                InlineKeyboardButton(text='¥ Курс Юаня', callback_data='yuan'),
+                InlineKeyboardButton(text='🛍 Магазин', callback_data='shop'),
+                InlineKeyboardButton(text='📊 Отзывы', url='https://t.me/dsk_reviews/1'),
             ],
             [
-                InlineKeyboardButton(text='🛍 Магазин', callback_data='shop'),
-                InlineKeyboardButton(text='📊 Отзывы', callback_data='feedback'),
+                InlineKeyboardButton(text='🔥 Сделать заказ', callback_data='order'),
             ],
             [
                 InlineKeyboardButton(text='🧮 Рассчитать стоимость доставки', callback_data='calc'),
             ],
         ])
-        await update.message.reply_text('Привет! Я бот пчёлка 🐝', reply_markup=reply_markup)
+        text = f'Привет! Я бот пчёлка 🐝\n\nТекущий курс рубля к юаню: 1¥ = {yuan_exchange_rate()}₽'
+        await update.message.reply_text(text, reply_markup=reply_markup)
     else:
         await update.message.reply_text(f'Вы не подписаны на канал. Пожалуйста, подпишитесь на канал {channel_name} и повторите попытку.')
 
@@ -56,24 +56,21 @@ async def button(update: Update, *_):
     ''' Parses the button. '''
     query = update.callback_query
     match query.data:
-        case 'order':
-            await query.message.reply_text('Чтобы сделать заказ напишите @dsk_support')
-        case 'yuan':
-            rate = yuan_exchange_rate()
-            await query.message.reply_text(f'Текущий курс рубля к юаню: 1¥ = {rate}₽')
         case 'shop':
             await query.message.reply_text('С товарами в нашем магазине вы можете ознакомится по этой ссылке')
-        case'feedback':
-            await query.message.reply_text('Посмотреть отзывы вы можете здесь https://t.me/dsk_reviews')
+        case 'order':
+            await query.message.reply_text('Чтобы сделать заказ напишите @dsk_support')
         case 'calc':
             reply_markup = InlineKeyboardMarkup([
                 [
-                    InlineKeyboardButton(text='Обувь', callback_data='product1'),
+                    InlineKeyboardButton(text='👟 Обувь', callback_data='product_shoes'),
                 ],
                 [
-                    InlineKeyboardButton(text='Одежда', callback_data='product3'),
-                    InlineKeyboardButton(text='Аксессуары', callback_data='product4'),
-                ]
+                    InlineKeyboardButton(text='👕 Одежда', callback_data='product_clothes'),
+                ],
+                [
+                    InlineKeyboardButton(text='🎒 Аксессуары', callback_data='product_others'),
+                ],
             ])
             await query.message.reply_text('Выберите категорию:', reply_markup=reply_markup)
         case 'product1':
