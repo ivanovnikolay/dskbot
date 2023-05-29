@@ -30,9 +30,7 @@ def init():
 
     app.add_handler(ConversationHandler(
         entry_points=[
-            CommandHandler('start', start),
-            CommandHandler('help', start),
-            CallbackQueryHandler(shop, pattern='shop'),
+            CommandHandler(('start', 'help'), start),
             CallbackQueryHandler(order, pattern='order'),
             CallbackQueryHandler(calculate, pattern='calculate'),
         ],
@@ -41,7 +39,7 @@ def init():
             CALCULATE_COUNT: [MessageHandler(filters.TEXT & ~filters.COMMAND, calculate_count)],
             CALCULATE_TOTAL: [MessageHandler(filters.TEXT & ~filters.COMMAND, calculate_total)],
         },
-        fallbacks=[CommandHandler('cancel', cancel)],
+        fallbacks=[CommandHandler(('start', 'cancel'), start)],
     ))
 
     return app
@@ -51,7 +49,7 @@ async def start(update: Update, _):
     ''' Send a message when the command /start is issued. '''
     reply_markup = InlineKeyboardMarkup([
         [
-            InlineKeyboardButton(text='🛍 Магазин', callback_data='shop'),
+            InlineKeyboardButton(text='🛍 Магазин', url='https://docs.google.com/spreadsheets/d/11r7_7HVRW-cU_t93-BB68Qsn2GbQQEfvwkkVkZQsfuE/edit#gid=0'),
             InlineKeyboardButton(text='📊 Отзывы', url='https://t.me/dsk_reviews/1'),
         ],
         [
@@ -63,10 +61,7 @@ async def start(update: Update, _):
     ])
     text = f'Привет! Я бот пчёлка 🐝\n\nТекущий курс рубля к юаню: 1¥ = {yuan_exchange_rate()}₽'
     await update.message.reply_text(text, reply_markup=reply_markup)
-
-
-async def shop(update: Update, _):
-    await update.callback_query.message.reply_text('С товарами в нашем магазине вы можете ознакомится по этой ссылке')
+    return ConversationHandler.END
 
 
 async def order(update: Update, _):
@@ -74,24 +69,17 @@ async def order(update: Update, _):
 
 
 async def calculate(update: Update, _):
-    reply_markup = InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton(text='👟 Обувь', callback_data='400'),
-        ],
-        [
-            InlineKeyboardButton(text='👕 Одежда', callback_data='500'),
-        ],
-        [
-            InlineKeyboardButton(text='🎒 Аксессуары', callback_data='600'),
-        ],
-    ])
-    await update.callback_query.message.reply_text('Выберите категорию:', reply_markup=reply_markup)
+    await update.callback_query.message.reply_text('Выберите категорию:', reply_markup=InlineKeyboardMarkup([
+        [InlineKeyboardButton(text='👟 Обувь', callback_data='1400')],
+        [InlineKeyboardButton(text='👕 Одежда', callback_data='600')],
+        [InlineKeyboardButton(text='🎒 Аксессуары', callback_data='700')],
+    ]))
     return CALCULATE_START
 
 
 async def calculate_start(update: Update, context):
     context.user_data['shipping'] = float(update.callback_query.data)
-    await update.callback_query.message.reply_text('Введите количество товара или /cancel для отмены текущего расчета:')
+    await update.callback_query.message.reply_text('Введите количество товара:')
     return CALCULATE_COUNT
 
 
@@ -99,11 +87,11 @@ async def calculate_count(update: Update, context):
     try:
         count = int(update.message.text)
     except Exception:
-        await update.message.reply_text('Не удалось прочитать количество товара.\nПожалуйста, введите количество товара или /cancel для отмены текущего расчета:')
+        await update.message.reply_text('Не удалось прочитать количество товара.\nПожалуйста, введите количество товара:')
         return CALCULATE_COUNT
 
     context.user_data['count'] = count
-    await update.message.reply_text('Введите общую сумму заказа в юанях или /cancel для отмены текущего расчета:')
+    await update.message.reply_text('Введите общую сумму заказа в юанях:')
     return CALCULATE_TOTAL
 
 
@@ -111,16 +99,14 @@ async def calculate_total(update: Update, context):
     try:
         amount = float(update.message.text) * yuan_exchange_rate()
     except Exception:
-        await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа в юанях или /cancel для отмены текущего расчета:')
+        await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа в юанях:')
         return CALCULATE_TOTAL
 
+    shipping = context.user_data['shipping'] 
     text = f'Стоимость заказа: {amount}₽\n'
-    shipping = context.user_data['shipping'] * context.user_data['count'] + comission
+    text += f'Комиссия: {comission}₽\n'
     text += f'Доставка: {shipping}₽\n'
-    text += f'ИТОГО: {shipping + amount}₽'
-    await update.message.reply_text(text)
-    return ConversationHandler.END
-
-
-async def cancel(update: Update, _):
-    return ConversationHandler.END
+    text += f'----------------------\n'
+    text += f'<b>ИТОГО: {shipping + amount+comission}₽</b>\n\n'
+    await update.message.reply_text(text, parse_mode='html')
+    return await start(update, context)
