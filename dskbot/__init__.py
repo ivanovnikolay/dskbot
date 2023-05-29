@@ -78,7 +78,7 @@ async def calculate(update: Update, _):
 
 
 async def calculate_start(update: Update, context):
-    context.user_data['shipping'] = float(update.callback_query.data)
+    context.user_data['shipping'] = int(update.callback_query.data)
     await update.callback_query.message.reply_text('Введите количество товара:')
     return CALCULATE_COUNT
 
@@ -97,7 +97,7 @@ async def calculate_count(update: Update, context):
 
 async def calculate_total(update: Update, context):
     try:
-        amount = float(update.message.text) * yuan_exchange_rate()
+        amount = round(float(update.message.text) * yuan_exchange_rate(), 0)
     except Exception:
         await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа в юанях:')
         return CALCULATE_TOTAL
