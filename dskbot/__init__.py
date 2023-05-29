@@ -102,11 +102,10 @@ async def calculate_total(update: Update, context):
         await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа в юанях:')
         return CALCULATE_TOTAL
 
-    shipping = context.user_data['shipping'] 
+    shipping = context.user_data['shipping'] + context.user_data['count'] * comission
     text = f'Стоимость заказа: {amount}₽\n'
-    text += f'Комиссия: {comission}₽\n'
     text += f'Доставка: {shipping}₽\n'
     text += f'----------------------\n'
-    text += f'<b>ИТОГО: {shipping + amount+comission}₽</b>\n\n'
+    text += f'<b>ИТОГО: {amount + shipping}₽</b>\n\n'
     await update.message.reply_text(text, parse_mode='html')
     return await start(update, context)
