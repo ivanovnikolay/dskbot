@@ -11,7 +11,7 @@ def yuan_exchange_rate():
     global _last_request_time
     global _last_rate
 
-    if monotonic() - _last_request_time > 3600:
+    if not _last_rate or monotonic() - _last_request_time > 3600:
         with urlopen('https://api.exchangerate-api.com/v4/latest/CNY') as response:
             exchange = json.load(response)
         _last_rate = exchange['rates']['RUB']
