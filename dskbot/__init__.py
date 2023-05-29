@@ -16,6 +16,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 token = getenv('TELEGRAM_TOKEN')
 channel_name = '@dsk_ch'
+comission = 300
 
 CALCULATE_START = 1
 CALCULATE_COUNT = 2
@@ -102,19 +103,19 @@ async def calculate_count(update: Update, context):
         return CALCULATE_COUNT
 
     context.user_data['count'] = count
-    await update.message.reply_text('Введите общую сумму заказа или /cancel для отмены текущего расчета:')
+    await update.message.reply_text('Введите общую сумму заказа в юанях или /cancel для отмены текущего расчета:')
     return CALCULATE_TOTAL
 
 
 async def calculate_total(update: Update, context):
     try:
-        amount = float(update.message.text)
+        amount = float(update.message.text) * yuan_exchange_rate()
     except Exception:
-        await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа или /cancel для отмены текущего расчета:')
+        await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа в юанях или /cancel для отмены текущего расчета:')
         return CALCULATE_TOTAL
 
     text = f'Стоимость заказа: {amount}₽\n'
-    shipping = context.user_data['shipping'] * context.user_data['count']
+    shipping = context.user_data['shipping'] * context.user_data['count'] + comission
     text += f'Доставка: {shipping}₽\n'
     text += f'ИТОГО: {shipping + amount}₽'
     await update.message.reply_text(text)
