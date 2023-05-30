@@ -97,15 +97,16 @@ async def calculate_count(update: Update, context):
 
 async def calculate_total(update: Update, context):
     try:
-        amount = round(float(update.message.text) * yuan_exchange_rate(), 0)
+        amount = round((float(update.message.text)+50) * yuan_exchange_rate(), 0)
     except Exception:
         await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа в юанях:')
         return CALCULATE_TOTAL
 
-    shipping = context.user_data['shipping'] + context.user_data['count'] * comission
+    shipping = context.user_data['shipping']
+    comission_total = context.user_data['count'] * comission
     text = f'Стоимость заказа: {amount}₽\n'
     text += f'Доставка: {shipping}₽\n'
     text += f'----------------------\n'
-    text += f'<b>ИТОГО: {amount + shipping}₽</b>\n\n'
+    text += f'<b>ИТОГО: {amount + shipping+comission_total}₽</b>\n\n'
     await update.message.reply_text(text, parse_mode='html')
     return await start(update, context)

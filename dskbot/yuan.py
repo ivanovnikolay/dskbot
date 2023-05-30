@@ -3,7 +3,7 @@ from time import monotonic
 from urllib.request import urlopen
 
 
-_spred = 0.7
+_spred = 0.4
 _last_request_time = 0
 _last_rate = 0
 
