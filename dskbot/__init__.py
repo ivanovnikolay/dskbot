@@ -33,6 +33,7 @@ def init():
             CommandHandler(('start', 'help'), start),
             CallbackQueryHandler(order, pattern='order'),
             CallbackQueryHandler(calculate, pattern='calculate'),
+            CallbackQueryHandler(apps, pattern='apps'),
         ],
         states={
             CALCULATE_START: [CallbackQueryHandler(calculate_start)],
@@ -56,6 +57,9 @@ async def start(update: Update, _):
             InlineKeyboardButton(text='🔥 Сделать заказ', callback_data='order'),
         ],
         [
+            InlineKeyboardButton(text='🛒 Приложения для выборов товара', callback_data='apps'),
+        ],
+        [
             InlineKeyboardButton(text='🧮 Рассчитать стоимость доставки', callback_data='calculate'),
         ],
     ])
@@ -67,6 +71,12 @@ async def start(update: Update, _):
 async def order(update: Update, _):
     await update.callback_query.message.reply_text('Чтобы сделать заказ напишите @dsk_support')
 
+async def apps(update: Update, _):
+    await update.callback_query.message.reply_text('Приложения для выборов товара:', reply_markup=InlineKeyboardMarkup([
+        [InlineKeyboardButton(text='Poizon(IOS)', url='https://apps.apple.com/app/id1012871328')],
+        [InlineKeyboardButton(text='Poizon(Android)', url='https://play.google.com/store/apps/details?id=com.shizhuang.poizon.hk&hl=ru&gl=US&cc_key=')],
+        [InlineKeyboardButton(text='95(IOS)', url='https://apps.apple.com/app/id1488709429')],
+    ]))
 
 async def calculate(update: Update, _):
     await update.callback_query.message.reply_text('Выберите категорию:', reply_markup=InlineKeyboardMarkup([
