@@ -77,8 +77,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         text = f'Привет! Этот бот является частью канала {channel_name} поэтому для работы с ботом, пожалуйста, подпишитесь на наш канал'
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton(text='Подписаться на канал', url=f'https://t.me/{channel_name}')],
-            [InlineKeyboardButton(text='Я подписался', callback_data='user_subscribed')],
+            [InlineKeyboardButton(text='📣 Подписаться на канал', url=f'https://t.me/{channel_name}')],
+            [InlineKeyboardButton(text='✅ Я подписался', callback_data='user_subscribed')],
         ])
     await (update.message or update.callback_query.message).reply_text(text, reply_markup=reply_markup)
     return ConversationHandler.END
