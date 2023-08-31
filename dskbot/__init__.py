@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 
 token = getenv('TELEGRAM_TOKEN')
 channel_name = '@dsk_ch'
-comission = 300
+comission = 1000
 
 CALCULATE_START = 1
 CALCULATE_COUNT = 2
@@ -99,7 +99,7 @@ async def apps(update: Update, _):
 async def calculate(update: Update,context: ContextTypes.DEFAULT_TYPE):
     await update.callback_query.message.reply_text('Выберите категорию:', reply_markup=InlineKeyboardMarkup([
         [InlineKeyboardButton(text='👟 Обувь', callback_data='1400')],
-        [InlineKeyboardButton(text='👕 Одежда', callback_data='600')],
+        [InlineKeyboardButton(text='👕 Одежда', callback_data='1000')],
         [InlineKeyboardButton(text='🎒 Аксессуары', callback_data='700')],
     ]))
     context.user_data['category'] = update.callback_query.data
