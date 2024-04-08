@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 
 token = getenv('TELEGRAM_TOKEN')
 channel_name = '@dsk_ch'
-comission = 300
+comission = 1000
 
 CALCULATE_START = 1
 CALCULATE_COUNT = 2
@@ -96,17 +96,19 @@ async def apps(update: Update, _):
     ]))
 
 
-async def calculate(update: Update, _):
+async def calculate(update: Update,context: ContextTypes.DEFAULT_TYPE):
     await update.callback_query.message.reply_text('Выберите категорию:', reply_markup=InlineKeyboardMarkup([
-        [InlineKeyboardButton(text='👟 Обувь', callback_data='1400')],
-        [InlineKeyboardButton(text='👕 Одежда', callback_data='600')],
+        [InlineKeyboardButton(text='👟 Обувь', callback_data='1800')],
+        [InlineKeyboardButton(text='👕 Одежда', callback_data='1000')],
         [InlineKeyboardButton(text='🎒 Аксессуары', callback_data='700')],
     ]))
+    context.user_data['category'] = update.callback_query.data
     return CALCULATE_START
 
 
 async def calculate_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data['shipping'] = int(update.callback_query.data)
+    context.user_data['category'] = update.callback_query.data
     await update.callback_query.message.reply_text('Введите количество товара:')
     return CALCULATE_COUNT
 
@@ -125,7 +127,9 @@ async def calculate_count(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def calculate_total(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        amount = round((float(update.message.text)+50) * yuan_exchange_rate(), 0)
+        category = context.user_data['category']
+        tax = 40 if category == '1800' else 30  # 40 юаней для обуви, 30 юаней для одежды и аксессуаров
+        amount = round((float(update.message.text)+tax) * yuan_exchange_rate(), 0)
     except Exception:
         await update.message.reply_text('Не удалось прочитать общую сумму заказа.\nПожалуйста, введите общую сумму заказа в юанях:')
         return CALCULATE_TOTAL
