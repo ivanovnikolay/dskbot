@@ -1,0 +1,44 @@
+{
+    "containerDefinitions": [
+        {
+            "name": "dskbot",
+            "image": "085021537148.dkr.ecr.us-west-2.amazonaws.com/qoob-app2",
+            "cpu": 0,
+            "portMappings": [],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "TELEGRAM_TOKEN",
+                    "value": "5780843687:AAHh9GbTREeJJBA-f1WiYpfjYJIyoPFpdKI"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/qoob-app2",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "healthCheck": {
+                "command": [
+                    "CMD-SHELL",
+                    "exit 0"
+                ],
+                "interval": 30,
+                "timeout": 5,
+                "retries": 3
+            }
+        }
+    ],
+    "family": "qoob-app2",
+    "executionRoleArn": "arn:aws:iam::085021537148:role/QoobTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}

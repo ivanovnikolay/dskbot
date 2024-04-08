@@ -31,10 +31,10 @@ on:
     branches: [ "main" ]
 
 env:
-  AWS_REGION: 'us-west-2'                   # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: 'imptracker-app'          # set this to your Amazon ECR repository name
-  ECS_SERVICE: 'imptracker-fes'             # set this to your Amazon ECS service name
-  ECS_CLUSTER: 'imptracker'                 # set this to your Amazon ECS cluster name
+  AWS_REGION: 'us-west-2'              # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: 'qoob-app2'          # set this to your Amazon ECR repository name
+  ECS_SERVICE: 'qoob-app2'             # set this to your Amazon ECS service name
+  ECS_CLUSTER: 'qoob'                  # set this to your Amazon ECS cluster name
 
 permissions:
   contents: read
